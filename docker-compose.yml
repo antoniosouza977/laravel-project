@@ -1,0 +1,31 @@
+version: "3.7"
+
+networks:
+  proxy:
+    external: true
+  app-name:
+
+services:
+#  Renomear para nome da aplicação
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    networks:
+      - app-name
+      - proxy
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - app-name
